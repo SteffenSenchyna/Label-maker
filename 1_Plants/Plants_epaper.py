@@ -10,13 +10,15 @@
 %   Date of creation: 8/19/2021
 ------------------------------------------------------------
 """
-import os
-import fnmatch
 import datetime
-import numpy as np
-import math
-import cairo
+import fnmatch
 import json
+import math
+import os
+
+import cairo
+import numpy as np
+
 
 def draw_image(ctx, image, top, left, height, width, rot=0):
     """Draw a scaled image on a given context."""
@@ -29,7 +31,7 @@ def draw_image(ctx, image, top, left, height, width, rot=0):
     scale_xy = min(height_ratio, width_ratio)
     # scale image and add it
     ctx.save()
-    ctx.rotate(rot*math.pi/180)
+    ctx.rotate(rot * math.pi / 180)
     ctx.translate(left, top)
     ctx.scale(scale_xy, scale_xy)
     ctx.set_source_surface(image_surface)
@@ -37,9 +39,10 @@ def draw_image(ctx, image, top, left, height, width, rot=0):
     ctx.paint()
     ctx.restore()
 
+
 def plot_parameter(ctx, parameter, value=False, thick=5, angle=270):
     alpha = np.deg2rad(angle)
-    beta = 2*math.pi - alpha
+    beta = 2 * math.pi - alpha
 
     rel_range = parameter['rel_range']
     abs_range = parameter['abs_range']
@@ -51,37 +54,37 @@ def plot_parameter(ctx, parameter, value=False, thick=5, angle=270):
         print('Error: rel_range values are not in abs_range')
         return
 
-    min_beta = (rel_range[0]-abs_range[0])/np.abs(abs_range[1]-abs_range[0])*alpha
-    max_beta = (1 - (abs_range[1]-rel_range[1])/np.abs(abs_range[1]-abs_range[0])) *alpha
+    min_beta = (rel_range[0] - abs_range[0]) / np.abs(abs_range[1] - abs_range[0]) * alpha
+    max_beta = (1 - (abs_range[1] - rel_range[1]) / np.abs(abs_range[1] - abs_range[0])) * alpha
 
     """ Icon """
     size = radius
     draw_image(ctx, parameter['icon'],
-               top+radius-size/2,
-               left+radius-size/2,
+               top + radius - size / 2,
+               left + radius - size / 2,
                size,
                size)
 
     """ Minimum """
     ctx.set_line_width(thick)
     ctx.set_source_rgb(1, 0, 0)
-    ctx.move_to(left+radius+(radius-thick/2)*math.cos(math.pi/2+beta/2), top+radius+(radius-thick/2)*math.sin(math.pi/2+beta/2))
-    ctx.arc(left+radius, top+radius, radius-thick/2, math.pi/2+beta/2, math.pi/2+beta/2+min_beta)
+    ctx.move_to(left + radius + (radius - thick / 2) * math.cos(math.pi / 2 + beta / 2), top + radius + (radius - thick / 2) * math.sin(math.pi / 2 + beta / 2))
+    ctx.arc(left + radius, top + radius, radius - thick / 2, math.pi / 2 + beta / 2, math.pi / 2 + beta / 2 + min_beta)
     ctx.stroke()
 
     """ Maximum """
-    ctx.move_to(left+radius+(radius-thick/2)*math.cos(math.pi/2+beta/2+max_beta), top+radius+(radius-thick/2)*math.sin(math.pi/2+beta/2+max_beta))
-    ctx.arc(left+radius, top+radius, radius-thick/2, math.pi/2+beta/2+max_beta, math.pi/2-beta/2)
+    ctx.move_to(left + radius + (radius - thick / 2) * math.cos(math.pi / 2 + beta / 2 + max_beta), top + radius + (radius - thick / 2) * math.sin(math.pi / 2 + beta / 2 + max_beta))
+    ctx.arc(left + radius, top + radius, radius - thick / 2, math.pi / 2 + beta / 2 + max_beta, math.pi / 2 - beta / 2)
     ctx.stroke()
 
     """ Contour """
     ctx.set_line_width(1)
     ctx.set_source_rgb(0, 0, 0)
-    ctx.move_to(left+radius+(radius-thick)*math.cos(math.pi/2+beta/2), top+radius+(radius-thick)*math.sin(math.pi/2+beta/2))
-    ctx.arc(left+radius, top+radius, radius, math.pi/2+beta/2, math.pi/2-beta/2)
-    ctx.move_to(left+radius+(radius-thick)*math.cos(math.pi/2+beta/2), top+radius+(radius-thick)*math.sin(math.pi/2+beta/2))
-    ctx.arc(left+radius, top+radius, radius-thick, math.pi/2+beta/2, math.pi/2-beta/2)
-    ctx.line_to(left+radius+radius*math.cos(math.pi/2-beta/2), top+radius+radius*math.sin(math.pi/2-beta/2))
+    ctx.move_to(left + radius + (radius - thick) * math.cos(math.pi / 2 + beta / 2), top + radius + (radius - thick) * math.sin(math.pi / 2 + beta / 2))
+    ctx.arc(left + radius, top + radius, radius, math.pi / 2 + beta / 2, math.pi / 2 - beta / 2)
+    ctx.move_to(left + radius + (radius - thick) * math.cos(math.pi / 2 + beta / 2), top + radius + (radius - thick) * math.sin(math.pi / 2 + beta / 2))
+    ctx.arc(left + radius, top + radius, radius - thick, math.pi / 2 + beta / 2, math.pi / 2 - beta / 2)
+    ctx.line_to(left + radius + radius * math.cos(math.pi / 2 - beta / 2), top + radius + radius * math.sin(math.pi / 2 - beta / 2))
     ctx.stroke()
 
     """ Value indicator """
@@ -90,12 +93,12 @@ def plot_parameter(ctx, parameter, value=False, thick=5, angle=270):
 
         ctx.move_to(left + radius + radius * math.cos(math.pi / 2 + beta / 2 + val),
                     top + radius + radius * math.sin(math.pi / 2 + beta / 2 + val))
-        ctx.line_to(left + radius + (radius+thick) * math.cos(math.pi / 2 + beta / 2 + val + 0.1),
-                top + radius + (radius+thick) * math.sin(math.pi / 2 + beta / 2 + val + 0.1))
-        ctx.line_to(left + radius + (radius+thick) * math.cos(math.pi / 2 + beta / 2 + val - 0.1),
-                top + radius + (radius+thick) * math.sin(math.pi / 2 + beta / 2 + val - 0.1))
+        ctx.line_to(left + radius + (radius + thick) * math.cos(math.pi / 2 + beta / 2 + val + 0.1),
+                    top + radius + (radius + thick) * math.sin(math.pi / 2 + beta / 2 + val + 0.1))
+        ctx.line_to(left + radius + (radius + thick) * math.cos(math.pi / 2 + beta / 2 + val - 0.1),
+                    top + radius + (radius + thick) * math.sin(math.pi / 2 + beta / 2 + val - 0.1))
         ctx.line_to(left + radius + (radius) * math.cos(math.pi / 2 + beta / 2 + val),
-                top + radius + (radius) * math.sin(math.pi / 2 + beta / 2 + val))
+                    top + radius + (radius) * math.sin(math.pi / 2 + beta / 2 + val))
         ctx.fill_preserve()
         ctx.stroke()
 
@@ -106,7 +109,7 @@ def plot_parameter(ctx, parameter, value=False, thick=5, angle=270):
         ctx.select_font_face(parameter['font_type'],
                              cairo.FONT_SLANT_NORMAL,
                              cairo.FONT_WEIGHT_NORMAL)
-        ctx.move_to(left + radius + parameter['font_xoff']- width/2, top +2.7*radius)
+        ctx.move_to(left + radius + parameter['font_xoff'] - width / 2, top + 2.7 * radius)
         ctx.show_text(label)
 
 
@@ -150,14 +153,14 @@ def main(path, simulation=False, page=1):
         ctx.select_font_face(config['subtitle']['font_type'],
                              cairo.FONT_SLANT_NORMAL,
                              cairo.FONT_WEIGHT_NORMAL)
-        ctx.move_to(config['general']['size'][0] - 1.1*width, config['title']['position'][1])
+        ctx.move_to(config['general']['size'][0] - 1.1 * width, config['title']['position'][1])
         ctx.show_text(lifespan)
 
         draw_image(ctx, config['life-cycle']['icon'],
                    config['title']['position'][0],
-                   config['general']['size'][0] - 1.2*width - height,
-                   1.2*height,
-                   1.2*height)
+                   config['general']['size'][0] - 1.2 * width - height,
+                   1.2 * height,
+                   1.2 * height)
 
     """ Life-cycle"""
     if config['synchronized']['display']:
@@ -174,17 +177,16 @@ def main(path, simulation=False, page=1):
                config['image']['size'][0],
                config['image']['size'][1])
 
-
     """ Parameters """
     sim = 1
     if not simulation:
         sim = 0
 
     if page == 1:
-        plot_parameter(ctx, config['parameters']['moisture'], sim*50)
-        plot_parameter(ctx, config['parameters']['temperature'], sim*18)
-        plot_parameter(ctx, config['parameters']['light'], sim*200)
-        plot_parameter(ctx, config['parameters']['humidity'], sim*200)
+        plot_parameter(ctx, config['parameters']['moisture'], sim * 50)
+        plot_parameter(ctx, config['parameters']['temperature'], sim * 18)
+        plot_parameter(ctx, config['parameters']['light'], sim * 200)
+        plot_parameter(ctx, config['parameters']['humidity'], sim * 200)
         # plot_parameter(ctx, config['parameters']['fertility'], sim*440)
     if page == 2:
         draw_image(ctx, config['bubble']['path'],
@@ -203,9 +205,8 @@ def main(path, simulation=False, page=1):
         ctx.select_font_face(config['subtitle']['font_type'],
                              cairo.FONT_SLANT_NORMAL,
                              cairo.FONT_WEIGHT_NORMAL)
-        ctx.move_to(config['general']['size'][0] - (1.1*width), config['subtitle']['position'][1])
+        ctx.move_to(config['general']['size'][0] - (1.1 * width), config['subtitle']['position'][1])
         ctx.show_text(date)
-
 
         """ Battery status"""
         bat = str(85) + "%"
@@ -218,10 +219,11 @@ def main(path, simulation=False, page=1):
         ctx.move_to(config['general']['size'][0] - width - 25, config['title']['position'][1])
         ctx.show_text(bat)
         draw_image(ctx, '../0_Resources/Battery/battery-90.png',
-                   5-config['general']['size'][0],
+                   5 - config['general']['size'][0],
                    5, 20, 20, 90)
     output = path.split('.')[0] + '_label_page_' + str(page) + '.png'
     surface.write_to_png(output)
+
 
 if __name__ == "__main__":
     root_dir = 'examples'
@@ -234,4 +236,3 @@ if __name__ == "__main__":
         print('Generating path ' + path)
         main(path, simulation=False, page=1)
         main(path, simulation=False, page=2)
-
