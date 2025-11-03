@@ -69,14 +69,14 @@
   "parameters": {
     "moisture": {
       "rel_range": [
-        40,
-        60
+        30,
+        50
       ],
       "abs_range": [
         0,
         100
       ],
-      "recomended": "3/week",
+      "recommended": "Every 1-2 weeks",
       "unit": "%",
       "icon": "../0_Resources/cup-water.png",
       "font_type": "Audiowide",
@@ -90,14 +90,14 @@
     },
     "light": {
       "rel_range": [
-        5000,
+        2000,
         10000
       ],
       "abs_range": [
         0,
         20000
       ],
-      "recomended": "High",
+      "recommended": "Bright indirect",
       "unit": "lux",
       "icon": "../0_Resources/white-balance-sunny.png",
       "font_type": "Audiowide",
@@ -111,15 +111,15 @@
     },
     "temperature": {
       "rel_range": [
-        18,
-        24
+        16,
+        27
       ],
       "abs_range": [
         -10,
         50
       ],
-      "recomended": "15-25 C",
-      "unit": "C",
+      "recommended": "16-27°C",
+      "unit": "°C",
       "icon": "../0_Resources/thermometer.png",
       "font_type": "Audiowide",
       "font_size": 12,
@@ -132,14 +132,14 @@
     },
     "humidity": {
       "rel_range": [
-        40,
-        60
+        50,
+        70
       ],
       "abs_range": [
         0,
         100
       ],
-      "recomended": "Normal",
+      "recommended": "Moderate-High",
       "unit": "%",
       "icon": "../0_Resources/water-percent.png",
       "font_type": "Audiowide",
